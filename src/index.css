@@ -1,0 +1,377 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+
+body {
+  background: linear-gradient(45deg, #e74c3c, #f1c40f, #16a085);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle cx="50" cy="50" r="2" fill="rgba(255, 255, 255, 0.3)" /></svg>') repeat;
+  animation: particleMove 20s linear infinite;
+  z-index: -1;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.header-decoration {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 10px;
+  background: linear-gradient(to right, #e74c3c, #f1c40f, #16a085);
+  border-radius: 5px;
+  animation: pulse 2s infinite;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+.title {
+  font-size: 3.5rem;
+  font-weight: 900;
+  margin-bottom: 40px;
+  animation: slide-down 1s ease-out;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.black-text {
+  color: #000;
+}
+
+.trep-letter {
+  font-weight: 900;
+  animation: glow 1.5s infinite alternate;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 30px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border: 2px solid transparent;
+  border-image: linear-gradient(to right, #e74c3c, #f1c40f, #16a085) 1;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.filter-group label {
+  color: #000000;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.filter-group select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.2);
+  color: #000000;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-group select:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.filter-group select:focus {
+  outline: none;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.content {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  animation: scale-up 1s ease-out 0.5s forwards;
+  opacity: 0;
+  border: 3px solid transparent;
+  border-image: linear-gradient(to right, #e74c3c, #f1c40f, #16a085) 1;
+}
+
+.total {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 30px;
+  animation: fade-in 1s ease-out 0.7s forwards;
+  opacity: 0;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.highlight {
+  color: #16a085;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(to right, #e74c3c, #f1c40f, #16a085);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.charts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+}
+
+@media (min-width: 768px) {
+  .charts {
+    grid-template-columns: 1fr 1fr;
+  }
+  .title {
+    font-size: 4.5rem;
+  }
+}
+
+.chart-box {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 2px solid transparent;
+  border-image: linear-gradient(to right, #e74c3c, #f1c40f, #16a085) 1;
+}
+
+.chart-box:hover {
+  transform: scale(1.05) rotate(1deg);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.chart-box h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 15px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.chart-box:first-child {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.chart-box canvas {
+  filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3));
+}
+
+.fade-in-left {
+  animation: fade-in-left 0.8s ease-out 0.8s forwards;
+}
+
+.fade-in-right {
+  animation: fade-in-right 0.8s ease-out 1s forwards;
+}
+
+.rotate-on-load {
+  animation: rotate-in 1.5s ease-out forwards;
+}
+
+.stats-bar {
+  margin-top: 30px;
+  opacity: 0;
+  animation: fade-in 1s ease-out 1.2s forwards;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 2px solid transparent;
+  border-image: linear-gradient(to right, #e74c3c, #f1c40f, #16a085) 1;
+}
+
+.stats-bar:hover {
+  transform: scale(1.02);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.stats-bar canvas {
+  max-height: 150px !important;
+}
+
+.stats-text {
+  margin-top: 20px;
+  text-align: left;
+  font-size: 1.1rem;
+  color: #fff;
+  opacity: 0;
+  animation: fade-in 1s ease-out 1.4s forwards;
+}
+
+.stats-text p {
+  margin: 5px 0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.additional-stats {
+  margin-top: 30px;
+  text-align: center;
+  font-size: 1.1rem;
+  color: #fff;
+  opacity: 0;
+  animation: fade-in 1s ease-out 1.6s forwards;
+}
+
+.participation {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 20px;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.footer {
+  margin-top: 40px;
+  color: #fff;
+  font-size: 1rem;
+  opacity: 0;
+  animation: fade-in 1s ease-out 1.8s forwards;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.bolivia-flag {
+  font-size: 1.5rem;
+  animation: bounce 1s infinite;
+}
+
+/* Animaciones */
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes particleMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 100px 100px; }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-up {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-50px) rotate(-5deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) rotate(0deg);
+  }
+}
+
+@keyframes fade-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(50px) rotate(5deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) rotate(0deg);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes rotate-in {
+  from {
+    opacity: 0;
+    transform: rotate(0deg) scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  }
+  to {
+    text-shadow: 0 0 15px rgba(255, 255, 255, 1);
+  }
+}
