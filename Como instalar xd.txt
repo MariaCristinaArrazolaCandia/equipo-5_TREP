@@ -1,0 +1,9 @@
+en la terminal
+pip install fastapi uvicorn pyodbc
+pip install python-multipart
+
+
+uvicorn main:app --reload
+
+luego te vas a
+http://127.0.0.1:8000/docs
