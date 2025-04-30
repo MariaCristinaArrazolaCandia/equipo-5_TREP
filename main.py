@@ -49,32 +49,110 @@ def recuento_TREP(
         codeRecint=codeRecint,
         tableCode=tableCode
     )
+    try:
+        if existe_en_voting_actA(acta.tableCode, codeRecint) :
+            if not existe_en_voting_recordA(acta.code):
+                for value in pr_values:
+                    try:
+                        parsed_values.append(int(value.strip()))
+                    except ValueError:
+                        Isletter = True
+                        errores.append((4, f"Letra detectada: {value}"))
+                if Isletter:
+                    insertar_acta_invalidaA(acta, errores)
+                    return {"errors": errores}
+                
+                validado, errores = validar_acta(acta.dict(),parsed_values)
 
-    if existe_en_voting_actA(acta.tableCode, codeRecint) :
-        if not existe_en_voting_recordA(acta.code):
-            for value in pr_values:
-                try:
-                    parsed_values.append(int(value.strip()))
-                except ValueError:
-                    Isletter = True
-                errores.append((4, f"Letra detectada: {value}"))
-            if Isletter:
-                insertar_acta_invalidaA(acta, errores)
-                return {"errors": errores}
-            
-            validado, errores = validar_acta(acta.dict(),parsed_values)
-
-            if validado:
-                insertar_acta_validaA(acta,parsed_values)
-                return {"message": "Acta válida y lista para inserción"}
+                if validado:
+                    insertar_acta_validaA(acta,parsed_values)
+                    return {"message": "Acta válida y lista para inserción"}
+                else:
+                    insertar_acta_invalidaA(acta, errores)
+                    return {"errors": errores}
             else:
-                insertar_acta_invalidaA(acta, errores)
-                return {"errors": errores}
+                Insert_ErrorA(acta.code) 
         else:
-            Insert_ErrorA(acta.code) 
-    else:
-        errores.append((2, f"No existe el acta y/o mesa"))
-        insertar_acta_invalidaA(acta, errores)
+            try:
+                errores.append((2, f"No existe el acta y/o mesa"))
+                insertar_acta_invalidaA(acta, errores)
+            except ValueError:
+                return {"error"}
+    except ValueError:
+        return {"error"}
+
+@app.get("/recuento-OFICIAL")
+def recuento_OFICIAL(
+    code: str,
+    papeletsInAnfora: int,
+    papeletsDontUsed: int,
+    citicensAvailables: int,
+    validVotes: int,
+    whiteVotes: int,
+    nullVotes: int,
+    tablee: int,
+    codeRecint: str,
+    tableCode: str,
+    pr1:str,
+    pr2:str,
+    pr3:str,
+    pr4:str,
+    Epdf:str
+):
+    errores = []
+    pr_values = [pr1, pr2, pr3, pr4]
+    parsed_values = []
+    Isletter = False
+
+    if Epdf == "No":
+        Isletter=True
+        errores.append((4, f"{Epdf}"))
+    
+    acta = Acta(
+        code=code,
+        papeletsInAnfora=papeletsInAnfora,
+        papeletsDontUsed=papeletsDontUsed,
+        citicensAvailables=citicensAvailables,
+        validVotes=validVotes,
+        whiteVotes=whiteVotes,
+        nullVotes=nullVotes,
+        pdfSize=0,
+        tablee=tablee,
+        codeRecint=codeRecint,
+        tableCode=tableCode
+    )
+    try:
+        if existe_en_voting_actB(acta.tableCode, codeRecint) :
+            if not existe_en_voting_recordB(acta.code):
+                for value in pr_values:
+                    try:
+                        parsed_values.append(int(value.strip()))
+                    except ValueError:
+                        Isletter = True
+                        errores.append((4, f"Dato incorrecto {value}"))
+                if Isletter:
+                    insertar_acta_invalidaB(acta, errores)
+                    return {"errors": errores}
+                
+                validado, errores = validar_acta(acta.dict(),parsed_values)
+
+                if validado:
+                    insertar_acta_validaB(acta,parsed_values)
+                    return {"message": "Acta válida y lista para inserción"}
+                else:
+                    insertar_acta_invalidaB(acta, errores)
+                    return {"errors": errores}
+            else:
+                Insert_ErrorB(acta.code) 
+        else:
+            try:
+                #errores.append((2, f"No existe el acta y/o mesa"))
+                #insertar_acta_invalidaB(acta, errores)
+                s=0
+            except ValueError:
+                return {"error"}
+    except ValueError:
+        return {"error"}
 
 
 
