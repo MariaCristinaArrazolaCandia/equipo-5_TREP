@@ -162,3 +162,44 @@ def Insert_ErrorA(Code):
 
     conn.commit()
     conn.close()
+
+
+def InsertFantasmaA(acta, errores):
+    conn = get_connectionA()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO VotingRecord (
+            code, papeletsInAnfora, papeletsDontUsed, citicensAvailables,
+            validVotes, whiteVotes, nullVotes, pdfSize, tablee,
+            status, codeRecint, tableCode
+        )
+        OUTPUT INSERTED.id
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        acta.code,
+        acta.papeletsInAnfora,
+        acta.papeletsDontUsed,
+        acta.citicensAvailables,
+        acta.validVotes,
+        acta.whiteVotes,
+        acta.nullVotes,
+        acta.pdfSize,
+        acta.tablee,
+        2,        # status
+        "ERROR",
+        acta.tableCode
+    ))
+    voting_record_id = cursor.fetchone()[0]
+
+    for id_categoria, mensaje in errores:
+            cursor.execute("""
+                INSERT INTO VotingError (
+                    observation, idVotingRecord, idError
+                )
+                VALUES (?, ?, ?)
+            """, (mensaje, voting_record_id, id_categoria))
+
+    conn.commit()
+    conn.close()
+   

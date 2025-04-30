@@ -160,3 +160,71 @@ def Insert_ErrorB(Code):
 
     conn.commit()
     conn.close()
+
+def conseguir_datos(code):
+    conn = get_connectionB()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+            SELECT va.papeletsInAnfora, va.nTable, r.code AS recintCode, va.tableCode
+            FROM VotingAct va
+            JOIN Recint r ON va.codeRecint = r.code
+            WHERE va.tableCode = ?
+        """, (code,))
+        
+        result = cursor.fetchone()
+
+        if result:
+            citicensAvailables, tablee, codeRecint, tableCode = result
+        else:
+            print(f"[AVISO] No se encontró información para el código de mesa: {code}")
+            citicensAvailables, tablee, codeRecint, tableCode = 0, 0, "", code
+
+    except Exception as e:
+        print(f"[ERROR] Fallo al obtener datos de la base para {code}: {e}")
+        citicensAvailables, tablee, codeRecint, tableCode = 0, 0, "", code
+
+    finally:
+        conn.close()
+
+    return citicensAvailables, tablee, codeRecint, tableCode
+
+def InsertFantasmaB(acta, errores):
+    conn = get_connectionB()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO VotingRecord (
+            code, papeletsInAnfora, papeletsDontUsed, citicensAvailables,
+            validVotes, whiteVotes, nullVotes, pdfSize, tablee,
+            status, codeRecint, tableCode
+        )
+        OUTPUT INSERTED.id
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        acta.code,
+        acta.papeletsInAnfora,
+        acta.papeletsDontUsed,
+        acta.citicensAvailables,
+        acta.validVotes,
+        acta.whiteVotes,
+        acta.nullVotes,
+        acta.pdfSize,
+        acta.tablee,
+        2,        # status
+        "ERROR",
+        acta.tableCode
+    ))
+    voting_record_id = cursor.fetchone()[0]
+
+    for id_categoria, mensaje in errores:
+            cursor.execute("""
+                INSERT INTO VotingError (
+                    observation, idVotingRecord, idError
+                )
+                VALUES (?, ?, ?)
+            """, (mensaje, voting_record_id, id_categoria))
+
+    conn.commit()
+    conn.close()

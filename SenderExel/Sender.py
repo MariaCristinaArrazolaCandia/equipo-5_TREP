@@ -1,23 +1,20 @@
 import requests 
 import pandas as pd
 
-archivo  = pd.ExcelFile(r"D:\UNIVERSIDAD\PROYECTOS\TREP 5GRUPO\SenderExel\Datos.xlsx", engine="openpyxl")
+archivo = pd.ExcelFile(r"D:\UNIVERSIDAD\PROYECTOS\TREP 5GRUPO\SenderExel\Datos.xlsx", engine="openpyxl")
 
-df = archivo.parse(sheet_name="ActasRapidas")
+# Cambiar el nombre de la hoja
+df = archivo.parse(sheet_name="ActasElectoralesTranscripcion")
 
-base_url="http://localhost:8000"
+base_url = "http://localhost:8000"
 
 def get_recuento_TREP(
     code: str,
     papeletsInAnfora: int,
     papeletsDontUsed: int,
-    citicensAvailables: int,
     validVotes: int,
     whiteVotes: int,
     nullVotes: int,
-    tablee: int,
-    codeRecint: str,
-    tableCode: str,
     pr1: int,
     pr2: int,
     pr3: int,
@@ -26,6 +23,7 @@ def get_recuento_TREP(
     errores_str = "No"
     hay_negativos = False
     hay_decimales = False
+
     def verificar_entero(valor, nombre=''):
         nonlocal hay_negativos, hay_decimales
         try:
@@ -40,39 +38,37 @@ def get_recuento_TREP(
             print(f"[ERROR] El valor '{valor}' del campo '{nombre}' no es numérico.")
             return None
 
-    papeletsInAnfora = verificar_entero(papeletsInAnfora,"1" )
-    papeletsDontUsed = verificar_entero(papeletsDontUsed,"2")
-    citicensAvailables = verificar_entero(citicensAvailables,"3")
-    validVotes = verificar_entero(validVotes,"4")
-    whiteVotes = verificar_entero(whiteVotes,"5")
-    nullVotes = verificar_entero(nullVotes,"6")
-    tablee = verificar_entero(tablee,"7")
-    pr1 = verificar_entero(pr1, 'pr1')
-    pr2 = verificar_entero(pr2, 'pr2')
-    pr3 = verificar_entero(pr3, 'pr3')
-    pr4 = verificar_entero(pr4, 'pr4')
+    papeletsInAnfora = verificar_entero(papeletsInAnfora, "Anfora")
+    papeletsDontUsed = verificar_entero(papeletsDontUsed, "NoUsadas")
+    validVotes = verificar_entero(validVotes, "Validos")
+    whiteVotes = verificar_entero(whiteVotes, "Blancos")
+    nullVotes = verificar_entero(nullVotes, "Nulos")
+    pr1 = verificar_entero(pr1, 'Partido1')
+    pr2 = verificar_entero(pr2, 'Partido2')
+    pr3 = verificar_entero(pr3, 'Partido3')
+    pr4 = verificar_entero(pr4, 'Partido4')
 
     if hay_negativos:
-        errores_str = errores_str + "Error números negativos"
+        errores_str += " - Error números negativos"
     if hay_decimales:
-        errores_str = errores_str + "Error números negativos"
+        errores_str += " - Error números decimales"
     
     params = {
         "code": code,
         "papeletsInAnfora": papeletsInAnfora,
         "papeletsDontUsed": papeletsDontUsed,
-        "citicensAvailables": citicensAvailables,
+        #"citicensAvailables": 0,  # Ya no está disponible, se pone 0 o se elimina del backend si no es necesario
         "validVotes": validVotes,
         "whiteVotes": whiteVotes,
         "nullVotes": nullVotes,
-        "tablee": tablee,
-        "codeRecint": codeRecint,
-        "tableCode": tableCode,
+        #"tablee": 0,  # Ya no está disponible
+        #"codeRecint": "",  # Ya no está disponible
+        #"tableCode": code, #Ya no se usa
         "pr1": pr1,
         "pr2": pr2,
         "pr3": pr3,
         "pr4": pr4,
-        "Epdf":errores_str
+        "Epdf": errores_str
     }
 
     response = requests.get(f"{base_url}/recuento-OFICIAL", params=params)
@@ -84,24 +80,18 @@ def get_recuento_TREP(
             raise Exception(f"Error {response.status_code}: {response.text}")
         except ValueError:
             print("algo anda mal")
-        
 
-
+# Llamado a la función con los nuevos datos
 for index, row in df.iterrows():
     get_recuento_TREP(
         code=row['CodigoMesa'],
         papeletsInAnfora=row['CantidadAnfora'],
         papeletsDontUsed=row['PapeletasNoUsadas'],
-        citicensAvailables=row['CantidadHabilitada'],
         validVotes=row['Validos'],
         whiteVotes=row['Blancos'],
         nullVotes=row['Nulos'],
-        tablee=row['Mesa'],
-        codeRecint=row['CodigoRecintoElectoralD'],
-        tableCode=row['CodigoMesa'],  # Si 'Mesa' es el código de la mesa
         pr1=row['Partido1'],
         pr2=row['Partido2'],
         pr3=row['Partido3'],
         pr4=row['Partido4']
     )
-

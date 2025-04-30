@@ -33,6 +33,7 @@ def recuento_TREP(
     pr_values = [pr1, pr2, pr3, pr4]
     parsed_values = []
     Isletter = False
+
     if not Eimagen.strip():
        errores.append((4,f"{Eimagen}"))
 
@@ -75,24 +76,25 @@ def recuento_TREP(
         else:
             try:
                 errores.append((2, f"No existe el acta y/o mesa"))
-                insertar_acta_invalidaA(acta, errores)
+                InsertFantasmaA(acta, errores)
             except ValueError:
                 return {"error"}
     except ValueError:
         return {"error"}
+
 
 @app.get("/recuento-OFICIAL")
 def recuento_OFICIAL(
     code: str,
     papeletsInAnfora: int,
     papeletsDontUsed: int,
-    citicensAvailables: int,
+    #citicensAvailables: int,
     validVotes: int,
     whiteVotes: int,
     nullVotes: int,
-    tablee: int,
-    codeRecint: str,
-    tableCode: str,
+    #tablee: int,
+    #codeRecint: str,
+    #tableCode: str,
     pr1:str,
     pr2:str,
     pr3:str,
@@ -102,12 +104,10 @@ def recuento_OFICIAL(
     errores = []
     pr_values = [pr1, pr2, pr3, pr4]
     parsed_values = []
-    Isletter = False
+    Isletter = False    
 
-    if Epdf == "No":
-        Isletter=True
-        errores.append((4, f"{Epdf}"))
-    
+    citicensAvailables, tablee, codeRecint, tableCode, = conseguir_datos(code)
+
     acta = Acta(
         code=code,
         papeletsInAnfora=papeletsInAnfora,
@@ -121,6 +121,12 @@ def recuento_OFICIAL(
         codeRecint=codeRecint,
         tableCode=tableCode
     )
+
+    if Epdf != "No":
+        Isletter=True
+        errores.append((4, f"{Epdf}"))
+        insertar_acta_invalidaB(acta, errores)
+
     try:
         if existe_en_voting_actB(acta.tableCode, codeRecint) :
             if not existe_en_voting_recordB(acta.code):
@@ -146,9 +152,8 @@ def recuento_OFICIAL(
                 Insert_ErrorB(acta.code) 
         else:
             try:
-                #errores.append((2, f"No existe el acta y/o mesa"))
-                #insertar_acta_invalidaB(acta, errores)
-                s=0
+                errores.append((2, f"No existe el acta y/o mesa"))
+                InsertFantasmaB(acta, errores)
             except ValueError:
                 return {"error"}
     except ValueError:
