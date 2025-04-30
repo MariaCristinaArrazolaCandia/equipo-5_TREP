@@ -183,7 +183,7 @@ def conseguir_datos(code):
 
     except Exception as e:
         print(f"[ERROR] Fallo al obtener datos de la base para {code}: {e}")
-        citicensAvailables, tablee, codeRecint, tableCode = 0, 0, "", code
+        citicensAvailables, tablee, codeRecint, tableCode = 0, 0, "ERROR", code
 
     finally:
         conn.close()
